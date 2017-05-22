@@ -24,19 +24,6 @@ public slots:
 
 protected:
   virtual void run();
-
-private:
-  MainWidget *mainWidget;
-  quint16 _port;
-  std::vector<Werewolf::Client> *clientVec;
-  QTcpServer *tcpServer;
-
-private slots:
-  void addClient();
-
-signals:
-  void hasNewClient();
-  void listenError();
 };
 
 #endif // LOGICTHREAD_H

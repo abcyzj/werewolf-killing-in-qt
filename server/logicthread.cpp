@@ -40,6 +40,9 @@ void LogicThread::run(){
 void LogicThread::addClient(){
  while(tcpServer->hasPendingConnections()){
      QTcpSocket *newsock = tcpServer->nextPendingConnection();
+     newsock->write(QString("Connected.").toUtf8());
+     qDebug() << "client added";
+     qDebug() << "thread info" << thread();
      clientVec->push_back(Werewolf::Client(newsock));
      emit hasNewClient();
    }

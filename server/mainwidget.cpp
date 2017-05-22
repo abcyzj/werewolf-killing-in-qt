@@ -14,21 +14,30 @@ MainWidget::MainWidget(QWidget *parent)
     startBtn(new QPushButton(tr("Start Game"), this)), broadcastSocket(this),
     gameLogicThread(this)
 {
+  worker.moveToThread(&gameLogicThread);
   showLabel->setText(tr("Click the Begin button to set up a server."));
-  connect(beginBtn, &QPushButton::clicked, this, &MainWidget::begin);
-  connect(startBtn, &QPushButton::clicked, this, &MainWidget::startGame);
-  connect(startBtn, &QPushButton::clicked, &gameLogicThread, &LogicThread::startGame, Qt::QueuedConnection);
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->addWidget(showLabel);
   mainLayout->addWidget(beginBtn);
   mainLayout->addWidget(startBtn);
   startBtn->hide();
   setLayout(mainLayout);
+  gameLogicThread.start();
+  initSignalSlot();
 }
 
 MainWidget::~MainWidget()
 {
 
+}
+
+void MainWidget::initSignalSlot(){
+  connect(beginBtn, &QPushButton::clicked, this, &MainWidget::begin);
+  connect(beginBtn, &QPushButton::clicked, &worker, &LogicWorker::run);
+  connect(startBtn, &QPushButton::clicked, this, &MainWidget::startGame);
+  connect(startBtn, &QPushButton::clicked, &worker, &LogicWorker::startGame);
+  connect(&worker, &LogicWorker::hasNewClient, this, &MainWidget::gotNewClient);
+  connect(&worker, &LogicWorker::listenError, this, &MainWidget::gotListenError);
 }
 
 void MainWidget::begin(){
@@ -40,7 +49,7 @@ void MainWidget::begin(){
   inputDialog.SetLineEditRegExp(0, QRegExp("^[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]{1}|6553[0-5]$"));
   if(inputDialog.exec() == QDialog::Accepted){
       QString port = inputDialog.GetOneText(0);
-      gameLogicThread.setPort(port.toInt());
+      worker.setPort(port.toInt());
       QString roomname = inputDialog.GetOneText(1);
       if(!port.isEmpty() && !roomname.isEmpty())
         broadcast(port, roomname);
@@ -76,7 +85,7 @@ void MainWidget::broadcastDatagram(){
 
 void MainWidget::startGame(){
   broadcastTimer.stop();
-  connect(&gameLogicThread, &QThread::finished, this, &MainWidget::gameOver);
+  connect(&worker, &LogicWorker::gameOver, this, &MainWidget::gameOver);
   startBtn->hide();
   showLabel->setText(tr("Game started."));
 }

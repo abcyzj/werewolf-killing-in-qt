@@ -1,6 +1,7 @@
 ﻿#include"client.h"
 
 #include <QtNetwork/QTcpSocket>
+#include <QDebug>
 
 using namespace Werewolf;
 
@@ -41,6 +42,7 @@ bool Client::available(){
 }
 
 void Client::print(std::string msg){
+  qDebug() << "send" << QString(msg.c_str());
   QByteArray data = ("PRINT:" + msg + ";").c_str();
   _sock->write(data);
 }

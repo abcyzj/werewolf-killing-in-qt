@@ -142,8 +142,8 @@ void Characterfac::set_client(int wolf, int witch, int prophet, int hunter, int 
 bool Characterfac::set(){
 	if(_client -> size() < 3){
 		for(int i = 0; i < _client -> size(); i++){
-			(*_client)[0].print("You have to get more people to start the game! At least 3");
-			(*_client)[0].print("Please quit");
+			(*_client)[i].print("You have to get more people to start the game! At least 3");
+			(*_client)[i].print("Please quit");
 			(*_client)[i].shut_down();
 		}
 		return false;

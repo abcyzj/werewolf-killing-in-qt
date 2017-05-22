@@ -19,16 +19,16 @@ SOURCES += main.cpp\
     multiinputdialog.cpp \
     client.cpp \
     character.cpp \
-    logicthread.cpp \
     characterfac.cpp \
     process.cpp \
-    processmanager.cpp
+    processmanager.cpp \
+    logicworker.cpp
 
 HEADERS  += mainwidget.h \
     multiinputdialog.h \
     client.h \
     character.h \
-    logicthread.h \
     characterfac.h \
     process.h \
-    processmanager.h
+    processmanager.h \
+    logicworker.h

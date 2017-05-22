@@ -7,8 +7,9 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <vector>
+#include <QThread>
 
-#include "logicthread.h"
+#include "logicworker.h"
 
 class QPushButton;
 class QLabel;
@@ -31,9 +32,11 @@ private:
   QString _roomname;
   QTimer broadcastTimer;
   QUdpSocket broadcastSocket;
-  LogicThread gameLogicThread;
+  QThread gameLogicThread;
+  LogicWorker worker;
 
   QString getIP();
+  void initSignalSlot();
 
 public slots:
   void gotNewClient();
