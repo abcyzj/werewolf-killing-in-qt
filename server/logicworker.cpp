@@ -20,7 +20,7 @@ void LogicWorker::setPort(quint16 port){
 
 void LogicWorker::run(){
   clientVec = new std::vector<Werewolf::Client>;
-  tcpServer = new QTcpServer;
+  tcpServer = new QTcpServer(this);
 
   qDebug() << "Worker running.";
 
@@ -39,10 +39,6 @@ void LogicWorker::run(){
 void LogicWorker::addClient(){
   while(tcpServer->hasPendingConnections()){
       QTcpSocket *newsock = tcpServer->nextPendingConnection();
-      newsock->write(QString("Connected.").toUtf8());
-      qDebug() << "client added";
-      qDebug() << "thread info" << thread();
-      newsock->write(QString("Hello").toUtf8());
       clientVec->push_back(Werewolf::Client(newsock));
       emit hasNewClient();
     }
@@ -51,11 +47,12 @@ void LogicWorker::addClient(){
 void LogicWorker::startGame(){
   Werewolf::ProcessManager manager(clientVec);
   Werewolf::Characterfac fac(clientVec, &manager);
-  clientVec->back().print("Excited");
-  qDebug() << "Starting game.";
-//  if(fac.set())
-//    manager.run();
-  fac.set();
+  if(fac.set())
+    manager.run();
+//  clientVec->at(0).print("Hello");
+//  clientVec->at(0).hold_on_input();
+//  for(int i = 0; i < 2; i++)
+//    qDebug() << QString(clientVec->at(0).recv().c_str());
+//  clientVec->at(0).turn_off_input();
   emit gameOver();
-  thread()->quit();
 }

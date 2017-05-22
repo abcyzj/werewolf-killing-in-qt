@@ -48,6 +48,11 @@ private slots:
   void startGame();
   void broadcastDatagram();
   void gameOver();
+
+  //test
+//  void addClient();
+//private:
+//  QTcpServer server;
 };
 
 #endif // MAINWIDGET_H

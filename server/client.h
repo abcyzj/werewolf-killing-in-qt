@@ -12,7 +12,8 @@ class QTcpSocket;
 namespace Werewolf{
   class Client : public QObject{
     Q_OBJECT
-  private:
+  //private:FOR Test
+  public:
     bool _available;//指示当前Client是否可用
     std::string _nickname = "UNKOWN";//客户端的昵称
     QTcpSocket *_sock;//和该客户端通信的Socket

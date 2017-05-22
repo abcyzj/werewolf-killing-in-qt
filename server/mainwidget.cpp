@@ -6,6 +6,7 @@
 
 #include <QtWidgets>
 #include <QtNetwork>
+#include <QtNetwork/QTcpServer>
 
 #include <QtTest/QTest>
 
@@ -14,6 +15,9 @@ MainWidget::MainWidget(QWidget *parent)
     startBtn(new QPushButton(tr("Start Game"), this)), broadcastSocket(this),
     gameLogicThread(this)
 {
+  //test
+//  server.listen(QHostAddress::Any, 2896);
+
   worker.moveToThread(&gameLogicThread);
   showLabel->setText(tr("Click the Begin button to set up a server."));
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -38,6 +42,9 @@ void MainWidget::initSignalSlot(){
   connect(startBtn, &QPushButton::clicked, &worker, &LogicWorker::startGame);
   connect(&worker, &LogicWorker::hasNewClient, this, &MainWidget::gotNewClient);
   connect(&worker, &LogicWorker::listenError, this, &MainWidget::gotListenError);
+
+  //test
+  //connect(&server, &QTcpServer::newConnection, this, &MainWidget::addClient);
 }
 
 void MainWidget::begin(){
@@ -75,7 +82,7 @@ QString MainWidget::getIP(){
       if(addr.protocol() == QAbstractSocket::IPv4Protocol && addr.toString() != "127.0.0.1")
         return addr.toString();
     }
-  return "127.0.0.1";//找不到，出错了
+  return "127.0.0.1";//找不到，只能返回无用地址
 }
 
 void MainWidget::broadcastDatagram(){
@@ -84,6 +91,7 @@ void MainWidget::broadcastDatagram(){
 }
 
 void MainWidget::startGame(){
+  qDebug() << "Main thread info: " << thread();
   broadcastTimer.stop();
   connect(&worker, &LogicWorker::gameOver, this, &MainWidget::gameOver);
   startBtn->hide();
@@ -103,3 +111,11 @@ void MainWidget::gotNewClient(){
 void MainWidget::gotListenError(){
   QMessageBox::warning(this, tr("TCP listen error."), tr("Cannot listen, please check."));
 }
+
+//test
+//void MainWidget::addClient(){
+//  qDebug() << "New client";
+//  QTcpSocket *newsock = server.nextPendingConnection();
+//  newsock->write(QString("PRINT:Hello;").toUtf8());
+//  showLabel->setText("client(s) connected.");
+//}

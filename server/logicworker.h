@@ -34,6 +34,11 @@ private:
 
 private slots:
   void addClient();
+
+
+  //test
+//public:
+//  QTcpSocket *test_sock;
 };
 
 #endif // LOGICWORKER_H
