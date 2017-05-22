@@ -8,7 +8,6 @@
 #include <QtNetwork/QUdpSocket>
 #include <vector>
 
-#include "client.h"
 #include "logicthread.h"
 
 class QPushButton;
@@ -23,8 +22,6 @@ public:
   MainWidget(QWidget *parent = 0);
   ~MainWidget();
 
-  void testGame();
-
 
 private:
   QPushButton *beginBtn;
@@ -34,18 +31,19 @@ private:
   QString _roomname;
   QTimer broadcastTimer;
   QUdpSocket broadcastSocket;
-  QTcpServer tcpServer;
-  std::vector<Werewolf::Client> clients;
   LogicThread gameLogicThread;
 
   QString getIP();
+
+public slots:
+  void gotNewClient();
+  void gotListenError();
 
 private slots:
   void begin();
   void broadcast(const QString &port, const QString &roomname);
   void startGame();
   void broadcastDatagram();
-  void addClient();
   void gameOver();
 };
 

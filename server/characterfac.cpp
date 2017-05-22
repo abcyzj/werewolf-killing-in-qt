@@ -144,7 +144,7 @@ bool Characterfac::set(){
 		for(int i = 0; i < _client -> size(); i++){
 			(*_client)[0].print("You have to get more people to start the game! At least 3");
 			(*_client)[0].print("Please quit");
-      (*_client)[i].shut_down();
+			(*_client)[i].shut_down();
 		}
 		return false;
 	}
