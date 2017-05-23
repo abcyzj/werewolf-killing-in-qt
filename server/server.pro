@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui\
-            network\
-            testlib
+            network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,18 +16,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwidget.cpp \
     multiinputdialog.cpp \
-    client.cpp \
     character.cpp \
     characterfac.cpp \
-    process.cpp \
     processmanager.cpp \
-    logicworker.cpp
+    logicworker.cpp \
+    client.cpp \
+    gameprocess.cpp
 
 HEADERS  += mainwidget.h \
     multiinputdialog.h \
-    client.h \
     character.h \
     characterfac.h \
-    process.h \
     processmanager.h \
-    logicworker.h
+    logicworker.h \
+    client.h \
+    gameprocess.h

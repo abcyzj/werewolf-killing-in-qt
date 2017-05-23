@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include "process.h"
+#include "gameprocess.h"
 #include "client.h"
 #include "character.h"
 #include <string>

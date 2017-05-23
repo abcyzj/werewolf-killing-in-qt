@@ -8,8 +8,6 @@
 #include <QtNetwork>
 #include <QtNetwork/QTcpServer>
 
-#include <QtTest/QTest>
-
 MainWidget::MainWidget(QWidget *parent)
   : QWidget(parent), beginBtn(new QPushButton(tr("Begin"), this)), showLabel(new QLabel(this)),
     startBtn(new QPushButton(tr("Start Game"), this)), broadcastSocket(this),

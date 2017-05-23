@@ -1,7 +1,8 @@
-﻿#include "process.h"
+﻿#include "gameprocess.h"
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <ctime>
 using namespace Werewolf;
 
 std::vector<logging> Process::_log;
