@@ -154,7 +154,7 @@ bool Killing::func(){
 					(*allclient)[lastalive].print("Which one you want to kill?\nJust input the player number.(-1 represents you haven't decided. 0 represents you won't kill anyone)\n");
 					(*allclient)[lastalive].turn_on_input();	
 					tgt=atoi((*allclient)[lastalive].recv().c_str());
-					//(*allclient)[lastalive].hold_on_input(); //单机测试的时候注释
+					(*allclient)[lastalive].hold_on_input(); //单机测试的时候注释
 				}
 			}
 		if(tgt>=0)

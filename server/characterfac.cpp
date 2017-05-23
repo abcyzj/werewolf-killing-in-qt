@@ -22,7 +22,7 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 	srand(time(0));
 
 	
-	while(num < wolf){return;
+	while(num < wolf){
 		randomnum = rand() % size;
 		if(exist[randomnum] == false){
 			num++;
@@ -64,7 +64,7 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 				client[randomnum].print("you are chosed to be prophet");
 				client[randomnum].set_charac(cha[sum - 1]);
 			}
-		}return;
+		}
 	}
 		num = 0;
 		while(num < guard){
@@ -94,7 +94,7 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 				client[randomnum].print("you are chosed to be hunter");
 				client[randomnum].set_charac(cha[sum - 1]);
 			}
-		}return;
+		}
 		}
 		num = 0;
 		while(num < villager){
@@ -111,7 +111,7 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 			}
 		}
 		}
-
+  return;
 }
 
 void Characterfac::set_client(){
