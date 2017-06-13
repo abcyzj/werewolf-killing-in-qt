@@ -1,4 +1,12 @@
-﻿#include "multiinputdialog.h"
+﻿/**************************************
+名称：multiinputdialog.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：有多个输入框的对话框
+版权：借鉴了某个CSDN博客
+**************************************/
+
+#include "multiinputdialog.h"
 
 #include <QtWidgets>
 

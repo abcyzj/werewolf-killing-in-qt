@@ -1,4 +1,12 @@
-﻿#include "mainwindow.h"
+﻿/*************************************************
+名称：connect.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：客户端主窗口类
+版权：完全自行完成
+*************************************************/
+
+#include "mainwindow.h"
 #include "connect.h"
 #include "inputbox.h"
 
@@ -41,8 +49,8 @@ Connect::Connect(MainWindow *parent)
 
 Connect::~Connect(){}
 
+//功能：开始连接进程
 void Connect::begin(){
-  qDebug() << "Connect begin";
   sock = new QUdpSocket(mainWin);
   sock->bind(mainWin->getPort(), QUdpSocket::ShareAddress);
   ipInputWidget->show();
@@ -52,6 +60,8 @@ void Connect::begin(){
   connect(serverList, &QListWidget::itemDoubleClicked, this, &Connect::connectToServ);
 }
 
+
+//功能：关闭连接线程
 void Connect::clear(){
   disconnect(sock, &QUdpSocket::readyRead, this, &Connect::processServInfo);
   disconnect(mainWin->getTcpSock(), &QTcpSocket::connected, mainWin, &MainWindow::CtoP);
@@ -62,6 +72,8 @@ void Connect::clear(){
   sock->close();
 }
 
+//功能：解析收到的服务器广播的服务信息，并在GUI上更新
+//说明：该函数是一个槽函数，与udpsocket的readyRead信号相连
 void Connect::processServInfo(){
   while(sock->hasPendingDatagrams()){
     QByteArray datagram;
@@ -83,6 +95,8 @@ void Connect::processServInfo(){
   }
 }
 
+//功能：连接服务器
+//说明：该函数是一个槽函数，当用户点击服务器列表时被调用
 void Connect::connectToServ(QListWidgetItem *serv){
   QString servInfo = serv->data(Qt::DisplayRole).toString();
   int pos = servInfo.indexOf(";");
@@ -93,6 +107,8 @@ void Connect::connectToServ(QListWidgetItem *serv){
   }
 }
 
+//功能：通过IP地址与服务器连接，当用户输入不可用的IP时弹出消息框提示
+//说明：该函数是一个槽函数，当用户完成IP地址输入时被调用。
 void Connect::connectViaIp(){
   QRegExp rx("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
   QRegExpValidator validator(rx, this);

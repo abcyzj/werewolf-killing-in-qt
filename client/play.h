@@ -1,4 +1,12 @@
-﻿#ifndef PLAY_H
+﻿/*************************************************
+名称：play.h
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：客户端游戏界面类
+版权：完全自行完成
+*************************************************/
+
+#ifndef PLAY_H
 #define PLAY_H
 
 #include <QWidget>
@@ -7,7 +15,6 @@
 #include "mainwindow.h"
 
 class InputBox;
-
 
 class Play : public QWidget{
   Q_OBJECT

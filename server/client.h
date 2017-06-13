@@ -1,4 +1,12 @@
-﻿#ifndef CLIENT_H
+﻿/*******************************************
+名称：client.h
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：向逻辑模块提供的与客户端通信的接口类
+版权：完全自行开发
+*******************************************/
+
+#ifndef CLIENT_H
 #define CLIENT_H
 
 #include"character.h"
@@ -12,8 +20,8 @@ class QTcpSocket;
 namespace Werewolf{
   class Client : public QObject{
     Q_OBJECT
-    //private:FOR Test
-  public:
+
+  private:
     bool _available;//指示当前Client是否可用
     std::string _nickname = "UNKOWN";//客户端的昵称
     QTcpSocket *_sock;//和该客户端通信的Socket
@@ -21,8 +29,6 @@ namespace Werewolf{
   public:
     Client();//默认构造函数
     Client(const Client&);//不允许拷贝构造
-    //Client& operator = (const Client&) = delete;//不允许拷贝赋值
-    //Client& operator = (Client&&);//移动赋值
     Client(QTcpSocket *);//给出Socket的构造函数
     ~Client();
     void set_sock(QTcpSocket *);//Socket也可不在构造时给出

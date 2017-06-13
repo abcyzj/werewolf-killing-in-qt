@@ -1,33 +1,25 @@
-﻿#include"client.h"
+﻿/*******************************************
+名称：client.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：向逻辑模块提供的与客户端通信的接口类
+版权：完全自行开发
+*******************************************/
+
+#include"client.h"
 
 #include <QtNetwork/QTcpSocket>
 #include <QDebug>
 
 using namespace Werewolf;
 
+//以下是给定不同参数时的构造函数
 Client::Client(): _available(false){}
 
 Client::Client(const Client &client): _available(client._available), _sock(client._sock){
-
 }
 
 Client::Client(QTcpSocket *sock): _available(true), _sock(sock){}
-
-//Client& Client::operator = (Client &&cl){
-//  if(this == &cl)
-//    return *this;
-
-//  if(cl.available()){
-//    _sock = _sock;
-//    _available = true;
-//    cl._available = false;
-//  }
-//  else{
-//    _available = fClientalse;
-//  }
-//  return *this;
-//}
-
 
 Client::~Client(){
 }
@@ -64,6 +56,12 @@ void Client::shut_down(){
   _sock->write(QByteArray("SHUT_DOWN;"));
 }
 
+
+//功能：读取客户端的信息，支持阻塞和非阻塞两种模式
+//参数：
+//    delay:当delay不为零时，指定非阻塞的延时时间（以秒为单位）；当delay为零时，采用阻塞模式。
+//
+//返回值：收到的信息
 std::string Client::recv(double delay){
   int msec = (int) delay * 1000;
 

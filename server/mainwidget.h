@@ -1,4 +1,12 @@
-﻿#ifndef MAINWIDGET_H
+﻿/**************************************
+名称：mainwidget.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：服务器端主控件类
+版权：完全自主完成
+**************************************/
+
+#ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
 #include <QWidget>

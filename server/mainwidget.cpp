@@ -1,4 +1,12 @@
-﻿#include "mainwidget.h"
+﻿/**************************************
+名称：mainwidget.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：服务器端主控件类
+版权：完全自主完成
+**************************************/
+
+#include "mainwidget.h"
 #include "multiinputdialog.h"
 
 #include "characterfac.h"
@@ -13,9 +21,6 @@ MainWidget::MainWidget(QWidget *parent)
     startBtn(new QPushButton(tr("Start Game"), this)), broadcastSocket(this),
     gameLogicThread(this)
 {
-  //test
-  //  server.listen(QHostAddress::Any, 2896);
-
   worker.moveToThread(&gameLogicThread);
   showLabel->setText(tr("Click the Begin button to set up a server."));
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -30,8 +35,6 @@ MainWidget::MainWidget(QWidget *parent)
 
 MainWidget::~MainWidget()
 {
-  gameLogicThread.quit();
-  gameLogicThread.wait();
 }
 
 void MainWidget::initSignalSlot(){
@@ -41,11 +44,10 @@ void MainWidget::initSignalSlot(){
   connect(startBtn, &QPushButton::clicked, &worker, &LogicWorker::startGame);
   connect(&worker, &LogicWorker::hasNewClient, this, &MainWidget::gotNewClient);
   connect(&worker, &LogicWorker::listenError, this, &MainWidget::gotListenError);
-
-  //test
-  //connect(&server, &QTcpServer::newConnection, this, &MainWidget::addClient);
 }
 
+//功能：弹出设置对话框，让用户配置服务器信息
+//说明：该函数将会检查用户输入的端口号是否合法
 void MainWidget::begin(){
   MultiInputDialog inputDialog(2, this);
   QStringList list;
@@ -64,6 +66,10 @@ void MainWidget::begin(){
   }
 }
 
+//功能：广播服务信息
+//参数：
+//    port:端口号
+//    roomname:房间名
 void MainWidget::broadcast(const QString &port, const QString &roomname){
   _port = port;
   _roomname = roomname;
@@ -77,22 +83,24 @@ void MainWidget::broadcast(const QString &port, const QString &roomname){
   startBtn->show();
 }
 
+//功能：查询本机IP地址并返回
 QString MainWidget::getIP(){
   QList<QHostAddress> list = QNetworkInterface::allAddresses();
   foreach(QHostAddress addr, list){
     if(addr.protocol() == QAbstractSocket::IPv4Protocol && addr.toString() != "127.0.0.1")
       return addr.toString();
   }
-  return "127.0.0.1";//找不到，只能返回无用地址
+  return "127.0.0.1";  //找不到，只能返回无用地址
 }
 
+//功能：广播的的实际执行函数
+//说明：与timer的信号相连，每隔一段时间执行一次
 void MainWidget::broadcastDatagram(){
   QString msg = "ROOMNAME:" + _roomname + ";IP:" + getIP() + ";";
   broadcastSocket.writeDatagram(msg.toUtf8(), QHostAddress::Broadcast, _port.toInt());
 }
 
 void MainWidget::startGame(){
-  qDebug() << "Main thread info: " << thread();
   broadcastTimer.stop();
   connect(&worker, &LogicWorker::gameOver, this, &MainWidget::gameOver);
   startBtn->hide();
@@ -101,7 +109,8 @@ void MainWidget::startGame(){
 
 void MainWidget::gameOver(){
   showLabel->setText(tr("Game over. We hope you and your friends had a good time."));
-  //gameLogicThread.quit();
+  gameLogicThread.quit();
+  gameLogicThread.wait();
 }
 
 void MainWidget::gotNewClient(){
@@ -113,11 +122,3 @@ void MainWidget::gotNewClient(){
 void MainWidget::gotListenError(){
   QMessageBox::warning(this, tr("TCP listen error."), tr("Cannot listen, please check."));
 }
-
-//test
-//void MainWidget::addClient(){
-//  qDebug() << "New client";
-//  QTcpSocket *newsock = server.nextPendingConnection();
-//  newsock->write(QString("PRINT:Hello;").toUtf8());
-//  showLabel->setText("client(s) connected.");
-//}

@@ -1,4 +1,12 @@
-﻿#include "welcome.h"
+﻿/*************************************************
+名称：welcome.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：客户端欢迎界面类
+版权：完全自行完成
+*************************************************/
+
+#include "welcome.h"
 #include "mainwindow.h"
 
 #include <QtWidgets>
@@ -24,14 +32,17 @@ Welcome::Welcome(MainWindow *parent)
 
 Welcome::~Welcome(){}
 
+//功能：展示欢迎界面
 void Welcome::begin(){
   welcomeWidget->show();
 }
 
+//功能：隐藏欢迎界面
 void Welcome::clear(){
   welcomeWidget->hide();
 }
 
+//功能：从端口输入框读取数据并用正则表达式检查，若不符合要求则弹窗提示
 void Welcome::gotPort(){
   qDebug() << "gotPort";
   QRegExp rx("^[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]{1}|6553[0-5]$");

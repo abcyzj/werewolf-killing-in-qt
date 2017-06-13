@@ -1,4 +1,12 @@
-﻿#include "play.h"
+﻿/*************************************************
+名称：play.cpp
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：客户端游戏界面类
+版权：完全自行完成
+*************************************************/
+
+#include "play.h"
 
 #include <QtWidgets>
 #include <QTimer>
@@ -22,6 +30,7 @@ Play::Play(MainWindow *parent)
 
 Play::~Play(){}
 
+//功能：开始游戏进程
 void Play::begin(){
   inputBox->disableInput();
   timer.start(20);
@@ -29,6 +38,7 @@ void Play::begin(){
   inputWidget->show();
 }
 
+//功能：结束游戏进程
 void Play::clear(){
   timer.stop();
   disconnect(&timer, &QTimer::timeout, this, &Play::addAndExecuteOrder);
@@ -36,6 +46,8 @@ void Play::clear(){
   order.clear();
 }
 
+//功能：tcpsocket读取信息、解析、并执行
+//说明：在Play的事件循环中，使用计时器timer不断调用该函数
 void Play::addAndExecuteOrder(){
   QTcpSocket *sock = mainWin->getTcpSock();
   if(sock->bytesAvailable()){
@@ -50,6 +62,8 @@ void Play::addAndExecuteOrder(){
     }
 }
 
+//功能：执行命令
+//说明：addAndExecuteOrder()通过调用本函数来执行命令
 void Play::execute(const QString &ord){
   if(ord.mid(0, 6) == "PRINT:"){
       mainWin->printText(ord.mid(6));
@@ -76,6 +90,8 @@ void Play::execute(const QString &ord){
     }
 }
 
+//功能：将玩家输入的消息发给服务器
+//说明：该函数是一个槽函数，在消息输入框得到输入后被调用
 void Play::sendToServ(){
   if(!inputBox->text().isEmpty()){
       QByteArray msg = inputBox->text().toUtf8();

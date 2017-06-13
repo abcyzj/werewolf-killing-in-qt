@@ -1,4 +1,12 @@
-﻿#ifndef LOGICWORKER_H
+﻿/************************************
+名称：logicworker.h
+作者：叶梓杰 计65 2016011380
+时间：2017/05/22
+内容：逻辑线程的执行者，在GUI线程外执行
+版权：完全自主完成
+************************************/
+
+#ifndef LOGICWORKER_H
 #define LOGICWORKER_H
 
 #include <QObject>
@@ -34,11 +42,6 @@ class LogicWorker : public QObject
 
     private slots:
       void addClient();
-
-
-      //test
-      //public:
-      //  QTcpSocket *test_sock;
 };
 
 #endif // LOGICWORKER_H
