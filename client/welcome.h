@@ -11,19 +11,19 @@ class InputBox;
 class Welcome : public QWidget{
   Q_OBJECT
 
-public:
+ public:
   Welcome(MainWindow *parent);
   ~Welcome();
   void begin();
   void clear();
 
-private:
+ private:
   MainWindow *mainWin;
   QWidget *welcomeWidget;
   InputBox *portInputBox;
 
-private slots:
-  void gotPort();
+  private slots:
+    void gotPort();
 };
 
 #endif // WELCOME_H

@@ -66,8 +66,8 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 			}
 		}
 	}
-		num = 0;
-		while(num < guard){
+  num = 0;
+  while(num < guard){
 		randomnum = rand() % size;
 		if(exist[randomnum] == false){
 			num++;
@@ -80,9 +80,9 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 				client[randomnum].set_charac(cha[sum - 1]);
 			}
 		}
-		}
-		num = 0;
-		while(num < hunter){
+  }
+  num = 0;
+  while(num < hunter){
 		randomnum = rand() % size;
 		if(exist[randomnum] == false){
 			num++;
@@ -95,9 +95,9 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 				client[randomnum].set_charac(cha[sum - 1]);
 			}
 		}
-		}
-		num = 0;
-		while(num < villager){
+  }
+  num = 0;
+  while(num < villager){
 		randomnum = rand() % size;
 		if(exist[randomnum] == false){
 			num++;
@@ -110,7 +110,7 @@ void Characterfac::produce(int wolf, int witch, int prophet, int hunter, int gua
 				client[randomnum].set_charac(cha[sum - 1]);
 			}
 		}
-		}
+  }
   return;
 }
 
@@ -149,53 +149,53 @@ bool Characterfac::set(){
 		return false;
 	}
 	else{
-	(*_client)[0].print("do you want to set the characters yourselves? print y for Yes and n for No");
-	(*_client)[0].turn_on_input();
-	std::string s = (*_client)[0].recv();
-	int chra[10];
-	int _num = 0;
-	if(s[0] == 'y'){
-		_num++;
-		(*_client)[0].print("please input the number of wolf");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
+    (*_client)[0].print("do you want to set the characters yourselves? print y for Yes and n for No");
+    (*_client)[0].turn_on_input();
+    std::string s = (*_client)[0].recv();
+    int chra[10];
+    int _num = 0;
+    if(s[0] == 'y'){
+      _num++;
+      (*_client)[0].print("please input the number of wolf");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
 
-		_num++;
-		(*_client)[0].print("please input the number of witch");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
+      _num++;
+      (*_client)[0].print("please input the number of witch");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
 
-		_num++;
-		(*_client)[0].print("please input the number of prophet");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
+      _num++;
+      (*_client)[0].print("please input the number of prophet");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
 
-		_num++;
-		(*_client)[0].print("please input the number of hunter");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
+      _num++;
+      (*_client)[0].print("please input the number of hunter");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
 
-		_num++;
-		(*_client)[0].print("please input the number of guard");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
+      _num++;
+      (*_client)[0].print("please input the number of guard");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
 
-		_num++;
-		(*_client)[0].print("please input the number of villager");
-		(*_client)[0].turn_on_input();
-		s = (*_client)[0].recv();
-		chra[_num] = s[0] - '0';
-		set_client(chra[1], chra[2], chra[3], chra[4], chra[5], chra[6]);
-	}
-	else{
-		set_client();
-	}
-	return true;
+      _num++;
+      (*_client)[0].print("please input the number of villager");
+      (*_client)[0].turn_on_input();
+      s = (*_client)[0].recv();
+      chra[_num] = s[0] - '0';
+      set_client(chra[1], chra[2], chra[3], chra[4], chra[5], chra[6]);
+    }
+    else{
+      set_client();
+    }
+    return true;
 	}
 }
 

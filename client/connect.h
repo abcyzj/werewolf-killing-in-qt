@@ -14,7 +14,7 @@ class InputBox;
 class Connect: public QWidget{
   Q_OBJECT
 
-public:
+ public:
   Connect(MainWindow *parent);
   ~Connect();
 
@@ -22,7 +22,7 @@ public:
   void clear();
   void setPort(quint16 port);
 
-private:
+ private:
   QWidget *ipInputWidget;
   QDockWidget *listDock;
   MainWindow *mainWin;
@@ -30,10 +30,10 @@ private:
   QListWidget *serverList;
   InputBox *ipInputBox;
 
-private slots:
-  void processServInfo();
-  void connectToServ(QListWidgetItem *serv);
-  void connectViaIp();
+  private slots:
+    void processServInfo();
+    void connectToServ(QListWidgetItem *serv);
+    void connectViaIp();
 };
 
 #endif // CONNECT_H

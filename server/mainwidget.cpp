@@ -14,7 +14,7 @@ MainWidget::MainWidget(QWidget *parent)
     gameLogicThread(this)
 {
   //test
-//  server.listen(QHostAddress::Any, 2896);
+  //  server.listen(QHostAddress::Any, 2896);
 
   worker.moveToThread(&gameLogicThread);
   showLabel->setText(tr("Click the Begin button to set up a server."));
@@ -54,14 +54,14 @@ void MainWidget::begin(){
   inputDialog.SetLabelsWidth(80);
   inputDialog.SetLineEditRegExp(0, QRegExp("^[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]{1}|6553[0-5]$"));
   if(inputDialog.exec() == QDialog::Accepted){
-      QString port = inputDialog.GetOneText(0);
-      QString roomname = inputDialog.GetOneText(1);
-      if(!port.isEmpty() && !roomname.isEmpty()){
-          worker.setPort(port.toInt());
-          broadcast(port, roomname);
-          emit setDone();
-        }
+    QString port = inputDialog.GetOneText(0);
+    QString roomname = inputDialog.GetOneText(1);
+    if(!port.isEmpty() && !roomname.isEmpty()){
+      worker.setPort(port.toInt());
+      broadcast(port, roomname);
+      emit setDone();
     }
+  }
 }
 
 void MainWidget::broadcast(const QString &port, const QString &roomname){
@@ -80,9 +80,9 @@ void MainWidget::broadcast(const QString &port, const QString &roomname){
 QString MainWidget::getIP(){
   QList<QHostAddress> list = QNetworkInterface::allAddresses();
   foreach(QHostAddress addr, list){
-      if(addr.protocol() == QAbstractSocket::IPv4Protocol && addr.toString() != "127.0.0.1")
-        return addr.toString();
-    }
+    if(addr.protocol() == QAbstractSocket::IPv4Protocol && addr.toString() != "127.0.0.1")
+      return addr.toString();
+  }
   return "127.0.0.1";//找不到，只能返回无用地址
 }
 

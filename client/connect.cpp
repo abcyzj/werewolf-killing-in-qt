@@ -64,23 +64,23 @@ void Connect::clear(){
 
 void Connect::processServInfo(){
   while(sock->hasPendingDatagrams()){
-      QByteArray datagram;
-      datagram.resize(sock->pendingDatagramSize());
-      sock->readDatagram(datagram.data(), datagram.size());
+    QByteArray datagram;
+    datagram.resize(sock->pendingDatagramSize());
+    sock->readDatagram(datagram.data(), datagram.size());
 
-      bool ok = true;
-      QString recvData(datagram);
-      for(int i = 0; i < serverList->count(); i++){
-          if(recvData ==
-             serverList->item(i)->data(Qt::DisplayRole).toString()){
-              ok = false;
-              break;
-            }
-        }
-
-      if(ok)
-        serverList->addItem(recvData);
+    bool ok = true;
+    QString recvData(datagram);
+    for(int i = 0; i < serverList->count(); i++){
+      if(recvData ==
+         serverList->item(i)->data(Qt::DisplayRole).toString()){
+        ok = false;
+        break;
+      }
     }
+
+    if(ok)
+      serverList->addItem(recvData);
+  }
 }
 
 void Connect::connectToServ(QListWidgetItem *serv){
@@ -88,9 +88,9 @@ void Connect::connectToServ(QListWidgetItem *serv){
   int pos = servInfo.indexOf(";");
   qDebug() << "Connect to serv.";
   if(pos >= 0){
-      QString addr = servInfo.mid(pos + 4, servInfo.length() - pos - 5);
-      mainWin->getTcpSock()->connectToHost(QHostAddress(addr), mainWin->getPort());
-    }
+    QString addr = servInfo.mid(pos + 4, servInfo.length() - pos - 5);
+    mainWin->getTcpSock()->connectToHost(QHostAddress(addr), mainWin->getPort());
+  }
 }
 
 void Connect::connectViaIp(){
@@ -101,10 +101,10 @@ void Connect::connectViaIp(){
 
 
   if(validator.validate(IPAddr, pos) == QRegExpValidator::Acceptable){
-      QString addr = ipInputBox->text();
-      mainWin->getTcpSock()->connectToHost(QHostAddress(addr), mainWin->getPort());
-    }
+    QString addr = ipInputBox->text();
+    mainWin->getTcpSock()->connectToHost(QHostAddress(addr), mainWin->getPort());
+  }
   else{
-      QMessageBox::information(this, tr("Incorrect IP address"), tr("You've entered a invalid IP address. Please check"));
-    }
+    QMessageBox::information(this, tr("Incorrect IP address"), tr("You've entered a invalid IP address. Please check"));
+  }
 }

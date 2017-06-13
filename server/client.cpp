@@ -43,7 +43,7 @@ bool Client::available(){
 
 void Client::print(std::string msg){
   QByteArray data = ("PRINT:" + msg + ";").c_str();
-   _sock->write(data);
+  _sock->write(data);
 }
 
 void Client::turn_on_input(){
@@ -68,20 +68,20 @@ std::string Client::recv(double delay){
   int msec = (int) delay * 1000;
 
   if(msec == 0){
-      if(_sock->waitForReadyRead(-1)){
-          QByteArray msg = _sock->readAll();
-          return msg.toStdString();
-        }
+    if(_sock->waitForReadyRead(-1)){
+      QByteArray msg = _sock->readAll();
+      return msg.toStdString();
     }
+  }
 
   else{
-      if(_sock->waitForReadyRead((int) msec)){
-          return _sock->readAll().toStdString();
-        }
-      else{
-          return std::string();
-        }
+    if(_sock->waitForReadyRead((int) msec)){
+      return _sock->readAll().toStdString();
     }
+    else{
+      return std::string();
+    }
+  }
 
   return std::string();
 }

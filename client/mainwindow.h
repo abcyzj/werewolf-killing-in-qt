@@ -14,7 +14,7 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
-public:
+ public:
   MainWindow(QWidget *parent = 0);
   ~MainWindow();
   QSplitter *splitter();
@@ -24,20 +24,20 @@ public:
   QTcpSocket* getTcpSock();
   void printText(const QString &);
 
-public slots:
-  void PtoW();
-  void WtoC();
-  void CtoP();
+  public slots:
+    void PtoW();
+    void WtoC();
+    void CtoP();
 
-private:
-  QSplitter *_splitter;
-  QTextEdit *showBox;
-  Welcome *welcomeProcess;
-  Connect *connectProcess;
-  Play *playProcess;
+ private:
+    QSplitter *_splitter;
+    QTextEdit *showBox;
+    Welcome *welcomeProcess;
+    Connect *connectProcess;
+    Play *playProcess;
 
-  quint16 _port;
-  QTcpSocket *tcpSock;
+    quint16 _port;
+    QTcpSocket *tcpSock;
 };
 
 #endif // MAINWINDOW_H

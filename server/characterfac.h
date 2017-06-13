@@ -20,8 +20,8 @@ namespace Werewolf{
     ~Characterfac();
     void produce(int wolf, int witch, int prophet, int hunter, int guard, int villager);
     void set_client();
-	void set_client(int wolf, int witch, int prophet, int hunter, int guard, int villager);
-	bool set();
+    void set_client(int wolf, int witch, int prophet, int hunter, int guard, int villager);
+    bool set();
   };
 }
 

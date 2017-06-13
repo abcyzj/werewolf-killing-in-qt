@@ -12,14 +12,14 @@ class InputBox;
 class Play : public QWidget{
   Q_OBJECT
 
-public:
+ public:
   Play(MainWindow* parent);
   ~Play();
 
   void begin();
   void clear();
 
-private:
+ private:
   MainWindow *mainWin;
   QWidget *inputWidget;
   InputBox *inputBox;
@@ -28,12 +28,12 @@ private:
 
   void execute(const QString &);
 
-private slots:
-  void addAndExecuteOrder();
-  void sendToServ();
+  private slots:
+    void addAndExecuteOrder();
+    void sendToServ();
 
-signals:
-  void msgSent();
+ signals:
+    void msgSent();
 };
 
 #endif // PLAY_H

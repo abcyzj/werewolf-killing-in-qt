@@ -6,16 +6,16 @@
 class InputBox : public QLineEdit{
   Q_OBJECT
 
-public:
+ public:
   InputBox(const QString &text, QWidget *parent = 0);
   ~InputBox();
 
-public slots:
-  void enableInput();
-  void disableInput();
+  public slots:
+    void enableInput();
+    void disableInput();
 
-protected:
-  virtual bool eventFilter(QObject *watched, QEvent *event);
+ protected:
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 };
 
 #endif // INPUTBOX_H

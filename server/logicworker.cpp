@@ -27,19 +27,19 @@ void LogicWorker::run(){
   qDebug() << "Here";
 
   if(!tcpServer->listen(QHostAddress::Any, _port)){
-      emit listenError();
-      return;
-    }
+    emit listenError();
+    return;
+  }
   connect(tcpServer, &QTcpServer::newConnection, this, &LogicWorker::addClient);
   qDebug() << "run over";
 }
 
 void LogicWorker::addClient(){
   while(tcpServer->hasPendingConnections()){
-      QTcpSocket *newsock = tcpServer->nextPendingConnection();
-      clientVec->push_back(Werewolf::Client(newsock));
-      emit hasNewClient();
-    }
+    QTcpSocket *newsock = tcpServer->nextPendingConnection();
+    clientVec->push_back(Werewolf::Client(newsock));
+    emit hasNewClient();
+  }
 }
 
 void LogicWorker::startGame(){
@@ -47,11 +47,11 @@ void LogicWorker::startGame(){
   Werewolf::Characterfac fac(clientVec, &manager);
   if(fac.set())
     manager.run();
-//  clientVec->at(0).print("Hello");
-//  clientVec->at(0).hold_on_input();
-//  for(int i = 0; i < 2; i++)
-//    qDebug() << QString(clientVec->at(0).recv().c_str());
-//  clientVec->at(0).turn_off_input();
+  //  clientVec->at(0).print("Hello");
+  //  clientVec->at(0).hold_on_input();
+  //  for(int i = 0; i < 2; i++)
+  //    qDebug() << QString(clientVec->at(0).recv().c_str());
+  //  clientVec->at(0).turn_off_input();
   emit gameOver();
 
   //必须在这里delete，logicworker的析构函数是在主线程中调用的

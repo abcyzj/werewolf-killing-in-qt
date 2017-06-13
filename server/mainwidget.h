@@ -19,12 +19,12 @@ class MainWidget : public QWidget
 {
   Q_OBJECT
 
-public:
+ public:
   MainWidget(QWidget *parent = 0);
   ~MainWidget();
 
 
-private:
+ private:
   QPushButton *beginBtn;
   QLabel *showLabel;
   QPushButton *startBtn;
@@ -38,24 +38,24 @@ private:
   QString getIP();
   void initSignalSlot();
 
-public slots:
-  void gotNewClient();
-  void gotListenError();
+  public slots:
+    void gotNewClient();
+    void gotListenError();
 
-private slots:
-  void begin();
-  void broadcast(const QString &port, const QString &roomname);
-  void startGame();
-  void broadcastDatagram();
-  void gameOver();
+    private slots:
+      void begin();
+      void broadcast(const QString &port, const QString &roomname);
+      void startGame();
+      void broadcastDatagram();
+      void gameOver();
 
-signals:
-  void setDone();
+ signals:
+      void setDone();
 
-  //test
-//  void addClient();
-//private:
-//  QTcpServer server;
+      //test
+      //  void addClient();
+      //private:
+      //  QTcpServer server;
 };
 
 #endif // MAINWIDGET_H

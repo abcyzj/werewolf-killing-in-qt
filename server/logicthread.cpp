@@ -28,9 +28,9 @@ void LogicThread::run(){
   connect(this, &LogicThread::listenError, mainWidget, &MainWidget::gotListenError);
 
   if(!tcpServer->listen(QHostAddress::Any, _port)){
-      emit listenError();
-      return;
-    }
+    emit listenError();
+    return;
+  }
 
   connect(tcpServer, &QTcpServer::newConnection, this, &LogicThread::addClient);
 
@@ -38,21 +38,21 @@ void LogicThread::run(){
 }
 
 void LogicThread::addClient(){
- while(tcpServer->hasPendingConnections()){
-     QTcpSocket *newsock = tcpServer->nextPendingConnection();
-     newsock->write(QString("Connected.").toUtf8());
-     qDebug() << "client added";
-     qDebug() << "thread info" << thread();
-     clientVec->push_back(Werewolf::Client(newsock));
-     emit hasNewClient();
-   }
+  while(tcpServer->hasPendingConnections()){
+    QTcpSocket *newsock = tcpServer->nextPendingConnection();
+    newsock->write(QString("Connected.").toUtf8());
+    qDebug() << "client added";
+    qDebug() << "thread info" << thread();
+    clientVec->push_back(Werewolf::Client(newsock));
+    emit hasNewClient();
+  }
 }
 
 void LogicThread::startGame(){
   Werewolf::ProcessManager manager(clientVec);
   Werewolf::Characterfac fac(clientVec, &manager);
-//  if(fac.set())
-//    manager.run();
+  //  if(fac.set())
+  //    manager.run();
   fac.set();
   quit();
 }
