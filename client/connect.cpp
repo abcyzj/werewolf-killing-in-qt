@@ -20,9 +20,6 @@ Connect::Connect(MainWindow *parent)
   QHBoxLayout *btnLayout = new QHBoxLayout(ipInputWidget);
   ipInputBox = new InputBox(tr("Input IP Address."), parent);
   ipInputBox->setFont(QFont("黑体", 20));
-  QRegExp rx("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
-  QRegExpValidator *m_IPValidator = new QRegExpValidator(rx, ipInputBox);
-  ipInputBox->setValidator(m_IPValidator);
   btnLayout->addWidget(ipInputBox);
   QPushButton *connectBtn = new QPushButton(tr("Connect"), parent);
   btnLayout->addWidget(connectBtn);
@@ -97,8 +94,17 @@ void Connect::connectToServ(QListWidgetItem *serv){
 }
 
 void Connect::connectViaIp(){
-  if(ipInputBox->hasAcceptableInput()){
+  QRegExp rx("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
+  QRegExpValidator validator(rx, this);
+  int pos = 0;
+  QString IPAddr = ipInputBox->text();
+
+
+  if(validator.validate(IPAddr, pos) == QRegExpValidator::Acceptable){
       QString addr = ipInputBox->text();
       mainWin->getTcpSock()->connectToHost(QHostAddress(addr), mainWin->getPort());
+    }
+  else{
+      QMessageBox::information(this, tr("Incorrect IP address"), tr("You've entered a invalid IP address. Please check"));
     }
 }

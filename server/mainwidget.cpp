@@ -30,12 +30,13 @@ MainWidget::MainWidget(QWidget *parent)
 
 MainWidget::~MainWidget()
 {
-
+  gameLogicThread.quit();
+  gameLogicThread.wait();
 }
 
 void MainWidget::initSignalSlot(){
   connect(beginBtn, &QPushButton::clicked, this, &MainWidget::begin);
-  connect(beginBtn, &QPushButton::clicked, &worker, &LogicWorker::run);
+  connect(this, &MainWidget::setDone, &worker, &LogicWorker::run);
   connect(startBtn, &QPushButton::clicked, this, &MainWidget::startGame);
   connect(startBtn, &QPushButton::clicked, &worker, &LogicWorker::startGame);
   connect(&worker, &LogicWorker::hasNewClient, this, &MainWidget::gotNewClient);
@@ -54,10 +55,12 @@ void MainWidget::begin(){
   inputDialog.SetLineEditRegExp(0, QRegExp("^[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]{1}|6553[0-5]$"));
   if(inputDialog.exec() == QDialog::Accepted){
       QString port = inputDialog.GetOneText(0);
-      worker.setPort(port.toInt());
       QString roomname = inputDialog.GetOneText(1);
-      if(!port.isEmpty() && !roomname.isEmpty())
-        broadcast(port, roomname);
+      if(!port.isEmpty() && !roomname.isEmpty()){
+          worker.setPort(port.toInt());
+          broadcast(port, roomname);
+          emit setDone();
+        }
     }
 }
 
@@ -98,6 +101,7 @@ void MainWidget::startGame(){
 
 void MainWidget::gameOver(){
   showLabel->setText(tr("Game over. We hope you and your friends had a good time."));
+  //gameLogicThread.quit();
 }
 
 void MainWidget::gotNewClient(){

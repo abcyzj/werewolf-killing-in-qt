@@ -49,6 +49,9 @@ private slots:
   void broadcastDatagram();
   void gameOver();
 
+signals:
+  void setDone();
+
   //test
 //  void addClient();
 //private:

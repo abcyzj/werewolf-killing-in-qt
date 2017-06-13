@@ -10,8 +10,6 @@ LogicWorker::LogicWorker(MainWidget *parent) : QObject(0), mainWidget(parent)
 }
 
 LogicWorker::~LogicWorker(){
-  delete clientVec;
-  delete tcpServer;
 }
 
 void LogicWorker::setPort(quint16 port){
@@ -55,4 +53,8 @@ void LogicWorker::startGame(){
 //    qDebug() << QString(clientVec->at(0).recv().c_str());
 //  clientVec->at(0).turn_off_input();
   emit gameOver();
+
+  //必须在这里delete，logicworker的析构函数是在主线程中调用的
+  delete clientVec;
+  delete tcpServer;
 }
