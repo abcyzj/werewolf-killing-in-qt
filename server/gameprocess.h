@@ -1,10 +1,20 @@
-﻿#ifndef PROCESS_H
+﻿/*************************************************
+名称：process.h
+作者：
+时间：2017/05/15
+内容：游戏的进程类
+版权：完全自行完成
+*************************************************/
+#ifndef PROCESS_H
 #define PROCESS_H
 
-#include "character.h"
-#include "client.h"
+
 #include <vector>
 #include <cstring>
+#include "character.h"
+#include "client.h"
+
+
 namespace Werewolf
 {
   enum Act{BITE=0,POISON=1,SAVE=2,GUARDING=3,SHOOT=4,PREDICT=5,VOTE=6};
@@ -39,6 +49,8 @@ namespace Werewolf
     static void writelog(Cha,Act,int);
     virtual ~Process();
   };
+  
+  
   class Guarding : public Process    //守卫
   {
   protected:
@@ -46,6 +58,7 @@ namespace Werewolf
   public:
     Guarding(std::vector<Client> *cli);
   };
+  
     
   class Killing : public Process //狼人杀人
   {
@@ -57,6 +70,7 @@ namespace Werewolf
     void push_cli_num(int num);
   };
     
+	
   class Witching : public Process//女巫
   {
   protected:
@@ -68,6 +82,7 @@ namespace Werewolf
     void add_ex_time(); //执行次数加1
   };
     
+	
   class Predicting : public Process   //预言家
   {
   protected:
@@ -76,13 +91,14 @@ namespace Werewolf
     Predicting(std::vector<Client> *cli);
   };
     
+	
   class Calculating : public Process
   {
   protected:
     Process* _hun;
     Process* _po;
     std::vector<logging>* _log;
-    int _calibra;//判断屠边还是屠城的标准，1为屠边，2为屠城
+    int _calibra;				//判断屠边还是屠城的标准，1为屠边，2为屠城
     bool calculatewolf();
     bool calculatepeo();
     bool calculategod();
@@ -95,13 +111,14 @@ namespace Werewolf
     bool hunting = false;
   public:
   Calculating(std::vector<Client> *cli, Process* hun, int calibra, Process* po) : Process(cli), _hun(hun), _calibra(calibra), _po(po){
-      _log = readlog();
+      _log = readlog();			//读日志，对当晚发生的事进行结算
     }
     ~Calculating(){
       delete _hun;
     }
   };
     
+	
   class Po_electing : public Process //选举警长
   {
   protected:
@@ -110,6 +127,7 @@ namespace Werewolf
     Po_electing(std::vector<Client> *cli);
   };
     
+	
   class Hunting;
   class Po_passing;
   class Voting : public Process //ͶƱ
@@ -124,7 +142,8 @@ namespace Werewolf
   public:
     Voting(std::vector<Client> *cli, Process*, Process*, Process*,int);
   };
-    
+   
+   
   class Hunting : public Process
   {
   protected:
@@ -136,6 +155,7 @@ namespace Werewolf
     Hunting(std::vector<Client> *cli);
   };
     
+	
   class Po_passing:public Process
   {//移交警徽
   protected:
@@ -163,4 +183,4 @@ namespace Werewolf
     Chat(std::vector<Client>*);
   };
 }
-#endif
+#endif//PROCESS_H

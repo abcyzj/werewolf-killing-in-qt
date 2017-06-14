@@ -1,4 +1,11 @@
-﻿#include "gameprocess.h"
+﻿/*************************************************
+名称：process.cpp
+作者：
+时间：2017/05/20
+内容：游戏的进程类
+版权：完全自行完成
+*************************************************/
+#include "gameprocess.h"
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -566,6 +573,9 @@ bool Voting::is_end(){
   }
   return false;
 }
+
+//功能：找到晚上被狼人杀死的人
+//说明：通过读日志实现
 void Calculating::find_dead(){
   for(int j = 0; j < (*_log).size(); j++){
     if((*_log)[j]._act == 0){
@@ -573,11 +583,18 @@ void Calculating::find_dead(){
     }
   }
 }
-bool Calculating::cal_guard(int i)
+
+//功能：判断角色是否被守卫
+//参数：
+//		cnt：玩家的序号
+bool Calculating::cal_guard(int cnt)
 {
-  return (*allclient)[i].selfCharacter()->is_guarded();
+  return (*allclient)[cnt].selfCharacter()->is_guarded();
 }
 
+//功能：判断角色是否被女巫救
+//参数：
+//		cnt：玩家的序号
 bool Calculating::is_saved(int cnt){
   for(int i = 0; i < (*_log).size(); i++){
     if((*_log)[i]._act == 2){
@@ -589,6 +606,9 @@ bool Calculating::is_saved(int cnt){
   return false;
 }
 
+//功能：判断角色是否被女巫毒
+//参数：
+//		cnt：玩家的序号
 bool Calculating::is_poisoned(int cnt){
   for(int i = 0; i < (*_log).size(); i++){
     if((*_log)[i]._act == 1){
@@ -600,15 +620,19 @@ bool Calculating::is_poisoned(int cnt){
   return false;
 }
 
-bool Calculating::calculatewolf(){//鈥毭犆垰鈭戔垰露鈭毭猜劉鈥毭劽粹€毭犅粹垰茂鈥毭犆€毭劼垛垰露鈭毭猜劉鈥毭劽粹€毭犆堵劉鈥毭劽光€毭劽?卢碌鈮埫垰鈭?
-  int sum = 0;
+
+//功能：判断狼人是否全部被杀死
+//返回值：
+//		若全部被杀死，则返回true
+bool Calculating::calculatewolf(){
+  int sum = 0;										     //sum, num 用于计数			
   int num = 0;
   std::vector<Client>& m = *allclient;
   for(auto i = 0; i < m.size(); i++){
     if(m[i].selfCharacter() -> type() == 1){
       sum++;
-      if(m[i].selfCharacter() -> is_dead() == true){
-        if(cal_guard(i) && is_saved(i)){
+      if(m[i].selfCharacter() -> is_dead() == true){	//被狼人杀
+        if(cal_guard(i) && is_saved(i)){				//同守同救，依然看做被杀死
           num++;
           for(int j = 0; j < allclient -> size(); j++){
             std::string s = std::to_string(i + 1);
@@ -616,16 +640,15 @@ bool Calculating::calculatewolf(){//鈥毭犆垰鈭戔垰露鈭毭猜劉�
             (*allclient)[j].print(s);
           }
           if(m[i].selfCharacter() -> type() == 3){
-            hunting = true;
+            hunting = true;								//死的是猎人，在后续进程中可以开枪
           }
           if(m[i].selfCharacter() -> is_police()){
-            officer = i;
+            officer = i;								//死的是警长，选择飞警徽和撕警徽
           }
                     
-          //willing(&m[i]);
         }
         else if(cal_guard(i)){
-          m[i].selfCharacter() -> set_alive();//卢卤卢鈩?鈭毭糕増铆卢酶卢碌鈭喢垰脛鈭氣垜鈥毭懧⒙德糕€毭趁も€毭劽猜埆鈥毭犅绰甭劉 鈭毭糕増铆卢酶鈥毭犆堵€⒙ｂ垰鈭?
+          m[i].selfCharacter() -> set_alive();			//被守卫守，女巫救则依然是活的
         }
         else if(is_saved(i)){
           m[i].selfCharacter() -> set_alive();
@@ -640,10 +663,10 @@ bool Calculating::calculatewolf(){//鈥毭犆垰鈭戔垰露鈭毭猜劉�
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
+    
         }
       }
-      else{
+      else{												//若没有被杀，则判断有没有被女巫毒
         if(is_poisoned(i)){
           num++;
           for(int j = 0; j < allclient -> size(); j++){
@@ -658,8 +681,7 @@ bool Calculating::calculatewolf(){//鈥毭犆垰鈭戔垰露鈭毭猜劉�
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
-        }
+          }
       }
     }
   }
@@ -670,6 +692,11 @@ bool Calculating::calculatewolf(){//鈥毭犆垰鈭戔垰露鈭毭猜劉�
     
 }
 
+
+//功能：判断村民是否全部被杀死
+//返回值：
+//		若全部被杀死，则返回true
+//说明：和上述函数过程相似
 bool Calculating::calculatepeo(){
   int sum = 0;
   int num = 0;
@@ -688,10 +715,9 @@ bool Calculating::calculatepeo(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
         else if(cal_guard(i)){
-          m[i].selfCharacter() -> set_alive();//卢卤卢鈩?鈭毭糕増铆卢酶卢碌鈭喢垰脛鈭氣垜鈥毭懧⒙德糕€毭趁も€毭劽猜埆鈥毭犅绰甭劉 鈭毭糕増铆卢酶鈥毭犆堵€⒙ｂ垰鈭?
+          m[i].selfCharacter() -> set_alive();
         }
         else if(is_saved(i)){
           m[i].selfCharacter() -> set_alive();
@@ -709,7 +735,6 @@ bool Calculating::calculatepeo(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
       }
       else{
@@ -727,7 +752,6 @@ bool Calculating::calculatepeo(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
       }
     }
@@ -738,6 +762,12 @@ bool Calculating::calculatepeo(){
   return false;
 }
 
+
+//功能：判断神民是否全部被杀死
+//返回值：
+//		若全部被杀死，则返回true
+//		反之，返回false
+//说明：和上述函数过程相似
 bool Calculating::calculategod(){
   int sum = 0;
   int num = 0;
@@ -759,10 +789,9 @@ bool Calculating::calculategod(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
         else if(cal_guard(i)){
-          m[i].selfCharacter() -> set_alive();//卢卤卢鈩?鈭毭糕増铆卢酶卢碌鈭喢垰脛鈭氣垜鈥毭懧⒙德糕€毭趁も€毭劽猜埆鈥毭犅绰甭劉 鈭毭糕増铆卢酶鈥毭犆堵€⒙ｂ垰鈭?
+          m[i].selfCharacter() -> set_alive();
         }
         else if(is_saved(i)){
           m[i].selfCharacter() -> set_alive();
@@ -781,7 +810,6 @@ bool Calculating::calculategod(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
       }
       else{
@@ -799,7 +827,6 @@ bool Calculating::calculategod(){
           if(m[i].selfCharacter() -> is_police()){
             officer = i;
           }
-          //willing(&m[i]);
         }
       }
     }
@@ -810,33 +837,38 @@ bool Calculating::calculategod(){
   return false;
 }
 
+
+//功能：结算类的运行函数
+//返回值：
+//		若满足游戏结束条件，返回false
+//		反之，返回true
 bool Calculating::func(){
   find_dead();
-  if(_calibra == 1){
+  if(_calibra == 1){											//标准为屠边
     if(calculategod() || calculatepeo()){
-      for(int i=0;i<allclient->size();i++)
+      for(int i = 0; i < allclient -> size(); i++)
         (*allclient)[i].print("Wolf Win!");
       return false;
     }
     else if(calculatewolf()){
-      for(int i=0;i<allclient->size();i++)
+      for(int i = 0; i < allclient -> size(); i++)
         (*allclient)[i].print("Good Man Win!");
       return false;
     }
     else{
-      if((*allclient)[officer].selfCharacter() -> is_police()){
+      if((*allclient)[officer].selfCharacter() -> is_police()){	//游戏未结束，执行警长，猎人死亡后的操作
         _po -> begin();
       }
       if(hunting){
         _hun -> begin();
-      }//the procedure is changable
-      return true;
+      }
+	  return true;
     }
         
   }
   else{
-    if(calculategod() && calculatepeo()){
-      for(int i=0;i<allclient->size();i++)
+    if(calculategod() && calculatepeo()){						//标准为屠城
+      for(int i = 0; i < allclient -> size(); i++)
         (*allclient)[i].print("Wolf Win!");
       return false;
     }
@@ -846,7 +878,7 @@ bool Calculating::func(){
       return false;
     }
     else{
-      if((*allclient)[officer].selfCharacter() -> is_police()){
+      if((*allclient)[officer].selfCharacter() -> is_police()){	//游戏未结束，执行警长，猎人死亡后的操作
         _po -> begin();
       }
       if(hunting){
