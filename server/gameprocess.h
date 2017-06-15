@@ -1,4 +1,4 @@
-﻿/*************************************************
+/*************************************************
 名称：process.h
 作者：
 时间：2017/05/15
@@ -143,7 +143,7 @@ namespace Werewolf
     Voting(std::vector<Client> *cli, Process*, Process*, Process*,int);
   };
    
-   
+  //猎人操作类
   class Hunting : public Process
   {
   protected:
@@ -165,22 +165,23 @@ namespace Werewolf
     Po_passing(std::vector<Client>*);
   };
     
+    //Chat类，用于用户之间的聊天功能
   class Chat : public Process
   {
   protected:
     static std::vector<logging>* _log;
     std::vector<Client> &client = *allclient;
-    int start_one;//存放发言开始之前的那个的人
+    int start_one;//存放发言开始之前的那个的人的序号
     bool police=0;//判断有无警长的布尔值
     void read();//读取日志函数
-    void right();//向右发言
-    void left();//向左发言
-    bool func();//行为函数
-    int size;
+    void right();//向右发言函数
+    void left();//向左发言函数
+    bool func();//聊天主体行为函数
+    int size;//所有玩家数目
     int dead_num = 0;//存放死的人数量
     int dead_player[100];//存放死的人的序号,记住是从1开始，初始化均为-1
   public:
-    Chat(std::vector<Client>*);
+    Chat(std::vector<Client>*);//构造函数
   };
 }
 #endif//PROCESS_H

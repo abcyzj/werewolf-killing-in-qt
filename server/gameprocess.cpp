@@ -1,4 +1,4 @@
-﻿/*************************************************
+/*************************************************
 名称：process.cpp
 作者：
 时间：2017/05/20
@@ -1162,44 +1162,58 @@ bool Po_passing::func(){
   return true;
 }
 
+
 Chat :: Chat(std::vector<Client>* _cli) : Process(_cli)
 {
   size = _cli -> size();
 }
 
-void Chat :: read()//Ëé∑Âèñdead_num,dead_player[],
+/*功能：读取每一天晚上的日志，获取死亡人数和死的玩家的序号
+  参数：start_one:一个整数，存放发言开始之前的那个的人的序号
+       police：一个布尔值数，判断有无警长的布尔值，初始值为0
+       size：一个整数，所有玩家数目
+       dead_num：一个整数，存放死的人数量
+       dead_player[100]：一个数组，存放死的人的序号,记住是从1开始，初始化均为-1
+       bite_man：一个整数，记录当晚被咬的人的序号，初始值设为-1
+       poison_man：一个整数，记录当晚被毒的人的序号，初始值设为-1
+       save_man：一个整数，记录当晚被救的人的序号，初始值设为-1
+       guard_man：一个整数，记录当晚被守卫的人的序号，初始值设为-1
+   返回值：获取死亡人数和死的玩家的序号，分别存入dead_num和dead_player[]数组中
+   算法：见函数中具体注释
+ */
+void Chat :: read()
 {
     
   int bite_man = -1;
   int poison_man = -1;
   int save_man = -1;
   int guard_man = -1;
-  memset(dead_player, -1, sizeof(dead_player));
-  _log = readlog();
-  for(int i=0 ; i<_log -> size() ; i++)//Âà§Êñ≠ÊúâÊ≤°ÊúâË¢´Âí¨ÊàñËÄÖË¢´ÊØí,Ë¢´ÂÆàÂç´ÔºåË¢´Êïë
+  memset(dead_player, -1, sizeof(dead_player));//初始化数组
+  _log = readlog();//读取当晚日志
+  for(int i=0 ; i<_log -> size() ; i++)//遍历一遍日志，获取玩家晚上遭受的动作行为是什么
     {
-      if((*_log)[i]._act == BITE)
+      if((*_log)[i]._act == BITE)//看玩家是不是被咬，被咬则bite_man的值为此玩家的序号
         bite_man = (*_log)[i]._geter;
-      if((*_log)[i]._act == POISON)
+      if((*_log)[i]._act == POISON)//看玩家是不是被毒，被毒则poison_man的值为此玩家的序号
         poison_man = (*_log)[i]._geter;
-      if((*_log)[i]._act == SAVE)
+      if((*_log)[i]._act == SAVE)//看玩家是不是被救，被救则save_man的值为此玩家的序号
         save_man = (*_log)[i]._geter;
-      if((*_log)[i]._act == GUARDING)
+      if((*_log)[i]._act == GUARDING)//看玩家是不是被守卫，被守卫则guard_man的值为此玩家的序号
         guard_man = (*_log)[i]._geter;
     }
-  for(int i=0 ; i<size ; i++)//Âà§Êñ≠ÊúâÊ≤°ÊúâË¢´ÂÆàÂç´ÊàñËÄÖË¢´Êïë
+  for(int i=0 ; i<size ; i++)//遍历一遍玩家，分析哪个玩家死了
     {
-      if((bite_man == i)&&(save_man != i)&&(guard_man != i))//Ë¢´Âí¨Ôºå‰∏çË¢´ÊïëÔºå‰∏çË¢´ÂÆàÂç´
+      if((bite_man == i)&&(save_man != i)&&(guard_man != i)) //被咬且不被救且不被守卫，为死
         {
+          dead_num++;//死亡人数+1
+          dead_player[dead_num]=i;//死的玩家的序号存入数组
+        }
+      else if((poison_man == i)&&(guard_man != i))//被毒且不被守卫，为死
+      {
           dead_num++;
           dead_player[dead_num]=i;
         }
-      else if((poison_man == i)&&(guard_man != i)) //  Ë¢´ÊØíÔºå‰∏çË¢´ÂÆàÂç´
-        {
-          dead_num++;
-          dead_player[dead_num]=i;
-        }
-      else if((bite_man == i)&&(save_man == i)&&(guard_man == i))//Ë¢´Âí¨ÔºåÂêåÂÆàÂêåÊïë
+      else if((bite_man == i)&&(save_man == i)&&(guard_man == i))//被咬且同守同救，为死
         {
           dead_num++;
           dead_player[dead_num]=i;
@@ -1207,17 +1221,21 @@ void Chat :: read()//Ëé∑Âèñdead_num,dead_player[],
     }
 }
 
+/*功能：顺序向右发言函数
+ 参数：start_one：发言开始的那个人，从func函数中获取
+ 算法：见函数中具体注释
+ */
 void Chat :: right()
 {
-  read();
-  for(int m=start_one+1; m < size; m++)
+  read();//执行read函数，获取相应数据
+  for(int m=start_one+1; m < size; m++)//从start_one的右边的一个人开始遍历，直到最后一个玩家为止
     {
-      if(! client[m].selfCharacter() -> is_dead())
+      if(! client[m].selfCharacter() -> is_dead())//如果此玩家没死，让他发言
         {
           client[m].print("Please input your massages:");
           client[m].turn_on_input();
           std::string s = client[m].recv();
-          for(int k = 0; k < size; k++)
+          for(int k = 0; k < size; k++)//将发言内容推送给其他玩家
             {
               if(! client[k].selfCharacter() -> is_dead())
                 {
@@ -1227,14 +1245,14 @@ void Chat :: right()
             }
         }
     }
-  for(int m = 0 ; m <=start_one ; m++)
+  for(int m = 0 ; m <=start_one ; m++)//从第一个玩家开始遍历，直到start_one为止
     {
-      if(! client[m].selfCharacter() -> is_dead())
+      if(! client[m].selfCharacter() -> is_dead())//如果此玩家没死，让他发言
         {
           client[m].print("Please input your massages:");
           client[m].turn_on_input();
           std::string s = client[m].recv();
-          for(int k = 0; k < size; k++)
+            for(int k = 0; k < size; k++)//将发言内容推送给其他玩家
             {
               if(! client[k].selfCharacter() -> is_dead())
                 {
@@ -1246,20 +1264,24 @@ void Chat :: right()
     }
 }
 
+/*功能：顺序向左发言函数
+ 参数：start_one：发言开始的那个人，从func函数中获取
+ 算法：见函数中具体注释
+ */
 void Chat :: left()
 {
-  read();
+  read();//执行read函数，获取相应数据
   int size = client.size();
-  if(start_one==0)
+  if(start_one==0)//如果start_one是第一个人，情况很简单
     {
-      for(int m = size-1; m >= 0; m--)
+      for(int m = size-1; m >= 0; m--)//直接从最后一个人向左遍历
         {
-          if(! client[m].selfCharacter() -> is_dead())
+          if(! client[m].selfCharacter() -> is_dead())//如果此玩家没死，让他发言
             {
               client[m].print("Please input your massages:");
               client[m].turn_on_input();
               std::string s = client[m].recv();
-              for(int k = 0; k < size; k++)
+              for(int k = 0; k < size; k++)//将发言内容推送给其他玩家
                 {
                   if(! client[k].selfCharacter() -> is_dead())
                     {
@@ -1271,16 +1293,16 @@ void Chat :: left()
         }
         
     }
-  else
+  else//如果start_one不是第一个人，需有两步
     {
-      for(int m = start_one-1; m>=0 ; m--)
+      for(int m = start_one-1; m>=0 ; m--)//从start_one开始，向左遍历，直到第一个玩家为止
         {
-          if(! client[m].selfCharacter() -> is_dead())
+          if(! client[m].selfCharacter() -> is_dead())//如果此玩家没死，让他发言
             {
               client[m].print("Please input your massages:");
               client[m].turn_on_input();
               std::string s = client[m].recv();
-              for(int k = 0; k < size; k++)
+              for(int k = 0; k < size; k++)//将发言内容推送给其他玩家
                 {
                   if(! client[k].selfCharacter() -> is_dead())
                     {
@@ -1290,14 +1312,14 @@ void Chat :: left()
                 }
             }
         }
-      for(int m = size-1; m >=start_one ; m--)
+      for(int m = size-1; m >=start_one ; m--)//从最后一个玩家开始，向左遍历，直到start_one为止
         {
-          if(! client[m].selfCharacter() -> is_dead())
+          if(! client[m].selfCharacter() -> is_dead())//如果此玩家没死，让他发言
             {
               client[m].print("Please input your massages:");
               client[m].turn_on_input();
               std::string s = client[m].recv();
-              for(int k = 0; k < size; k++)
+              for(int k = 0; k < size; k++)//将发言内容推送给其他玩家
                 {
                   if(! client[k].selfCharacter() -> is_dead())
                     {
@@ -1310,22 +1332,24 @@ void Chat :: left()
     }
 }
 
-
+/*功能：Chat类的主运行函数，实现玩家之间的聊天功能
+参数：同上面的Read函数，此函数参数主要从Read函数获取
+ */
 bool Chat :: func()
 {
-  for(int i = 0; i < (*allclient).size(); i++)
+  for(int i = 0; i < (*allclient).size(); i++)//告诉每一个玩家，白天开始了
     if(!(*allclient)[i].selfCharacter() -> is_dead())
       (*allclient)[i].print("Daytime begins.\n");
-  read();
-  if (dead_num == 0)
+  read();//执行read函数
+  if (dead_num == 0)//如果前天晚上没有死人
     {
-      for(int i = 0; i < size ; i++)
+      for(int i = 0; i < size ; i++)//告诉每一个人前一天晚上没有事
         {
           if(!(*allclient)[i].selfCharacter() -> is_dead())
             (*allclient)[i].print("Silent Night!");
         }
     }
-  else
+  else//前一天晚上死人了
     {
       std::string dead_peo = "Player";
       for(int i = 1; i <= dead_num; i++)
@@ -1340,7 +1364,7 @@ bool Chat :: func()
         }
         
     }
-  for(int i=0 ; i < size ; i++)
+  for(int i=0 ; i < size ; i++)//找出死的人，让他说遗言
     {
       for(int j=1 ; j<=dead_num ; j++)
         {
@@ -1354,56 +1378,56 @@ bool Chat :: func()
             }
         }
     }
-  for(int i=0 ; i < size ; i++)
+  for(int i=0 ; i < size ; i++)//遍历玩家，看有没有警长
     {
       //std::cout << have_police << std::endl;
       if(have_police == i+1 )
         {
           police=1;
-          if (dead_num==1)
+          if (dead_num==1)//有警长，且死亡人数为1的情况，由警长选择发言顺序和发言开始的人
             {
               start_one=dead_player[1];
               client[i].print("Please choose left or right:");
               client[i].turn_on_input();;
               std::string p = client[i].recv();
-              if(p[0] == 'r')
+              if(p[0] == 'r')//若警长选择“r”，则代表向右
                 right();
-              else
+              else//否则是向左
                 left();
             }
-          else
+          else//有警长但死亡人数不为1，从警长开始发言，发言顺序由警长决定
             {
               start_one=i;
               client[i].print("Please choose left or right:");
               client[i].turn_on_input();
               std::string p = client[i].recv();
-              if(p[0] == 'r')
+              if(p[0] == 'r')//若警长选择“r”，则代表向右
                 right();
-              else
+              else//否则是向左
                 left();
             }
         }
       else
         continue;
     }
-  if(police==0)
+  if(police==0)//没有警长的情况
     {
-      if(dead_num==1)
+      if(dead_num==1)//没有警长，死亡人数为1，从死的那个人开始，发言顺序随机产生
         {
           start_one = dead_player[1];
           srand( (unsigned)time( NULL ) );
-          int left_right = rand() % 2;
+          int left_right = rand() % 2;//产生随机发言顺序，1为右，0为左
           if(left_right==1)
             right();
           else
             left();
         }
-      else
+      else//没有警长，且死亡人数不为1，从死的人中随机选一个人作为发言开始的人，发言顺序随机产生
         {
           srand( (unsigned)time( NULL ) );
-          int t =  rand() % size + 1;
+          int t =  rand() % size + 1;//随机产生发言开始的人
           start_one = dead_player[t];
-          int left_right = rand() % 2;
+          int left_right = rand() % 2;//产生随机发言顺序，1为右，0为左
           if(left_right==1)
             right();
           else
@@ -1414,6 +1438,8 @@ bool Chat :: func()
   return true;
 }
 
+//功能：猎人的操作
+//算法：遍历数组进行询问每一个玩家，让每一个玩家选举投票杀人，然后得出要杀死的人，将其杀死
 bool Hunting :: func()
 {
   std::vector <Client>& tep_cli = *_cli;
@@ -1421,11 +1447,11 @@ bool Hunting :: func()
     {
       if(tep_cli[i].selfCharacter() -> type() == 3)
         {
-          tep_cli[i].print("Please choose a man you want to kill");
+          tep_cli[i].print("Please choose a man you want to kill");//询问玩家，选择一个人将其杀死
           tep_cli[i].turn_on_input();
           std::string s = tep_cli[i].recv();
-          int x = std::atoi(s.c_str());
-          tep_cli[x].selfCharacter() ->set_dead();
+          int x = std::atoi(s.c_str());//获取被选要杀死的人的序号
+          tep_cli[x].selfCharacter() ->set_dead();//将这个人的selfcharacter的相关属性置为“已死”
         }
     }
   return true;
