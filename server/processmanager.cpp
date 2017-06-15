@@ -148,6 +148,7 @@ void ProcessManager :: shutdown(){
 //说明：玩家身份由角色类自带的参数确定
 void ProcessManager::gameover(){
 	
+	std::string s;//用于输出内容的string
     for(auto i = 0; i < (*_client).size(); i++){
 		int people_rel = (*_client)[i].selfCharacter() -> type();
 		if(people_rel == 1){
