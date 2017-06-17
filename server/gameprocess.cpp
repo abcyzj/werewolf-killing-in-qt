@@ -1,8 +1,8 @@
 /*************************************************
 名称：process.cpp
-作者：
+作者：王琛 李映辉 刘应天 曾军
 时间：2017/05/20
-内容：游戏的进程类
+内容：游戏的进程类(process.h的实现)
 版权：完全自行完成
 *************************************************/
 #include "gameprocess.h"
@@ -12,6 +12,7 @@
 #include <ctime>
 using namespace Werewolf;
 
+//以下为process基类一些变量的初始化以及process子类的构造函数
 std::vector<logging> Process::_log;
 int Process::have_police = -1;
 std::vector<logging>* Chat::_log = nullptr;
@@ -40,7 +41,8 @@ void Process :: activate()
   _valid = 1;
 }
 
-int Process::get_size(){
+int Process::get_size()
+{
   return _rel_cli.size();
 }
 

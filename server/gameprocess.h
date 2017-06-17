@@ -1,10 +1,33 @@
 /*************************************************
 名称：process.h
-作者：
+作者：王琛 李映辉 刘应天 曾军
 时间：2017/05/15
 内容：游戏的进程类
 版权：完全自行完成
 *************************************************/
+
+/*************************************************
+ 分工情况：
+ 王琛：
+    process基类的构建
+    process子类：Guarding,Witching,Predicting,Po_electing
+ 刘应天：
+    logging
+    process子类：Killing,Hunting,Po_passing
+ 李映辉：
+    process子类：Chat
+ 曾军：
+    Process子类：Calculating
+*************************************************/
+
+/*************************************************
+ process类的工作原理：
+ process每个子类表示游戏的一个进程，例如女巫用药，狼人杀人等，processmanager负责将每个流程串接起来
+ process中的valid表示该进程是否可用，func函数是每个子类最基本的函数，
+     进行每项流程的具体操作，而begin则负责开始该进程，如果非valid，直接返回true，如果valid，再去执行func函数
+具体的实现见process类及process.cpp
+*************************************************/
+
 #ifndef PROCESS_H
 #define PROCESS_H
 
@@ -17,41 +40,44 @@
 
 namespace Werewolf
 {
-  enum Act{BITE=0,POISON=1,SAVE=2,GUARDING=3,SHOOT=4,PREDICT=5,VOTE=6};
-  enum Cha{ALL,WOLF,WITCH,GUARD,HUNTER,SEER};
+  enum Act{BITE=0,POISON=1,SAVE=2,GUARDING=3,SHOOT=4,PREDICT=5,VOTE=6};//用枚举定义夜晚的操作，便于logging中记录
+  enum Cha{ALL,WOLF,WITCH,GUARD,HUNTER,SEER};   //用枚举定义操作的执行者
+  //logging功能：记录每晚上发生的操作，写日志
   struct logging
   {
-    Cha _doer;
-    Act _act;
-    int _geter;
+    Cha _doer;  //动作的执行者
+    Act _act;   //动作的种类
+    int _geter; //动作的承受者
   };
+    
+  //Process:抽象类，子类表示游戏的每一个流程
   class Process
   {
   protected:
-    bool _valid = false;
-    Process* _next;
-    std::vector<Client*> _rel_cli;
-    std::vector<Client>* allclient;
+    bool _valid = false;        //表示该进程是否可用
+    Process* _next;             //表示该进程的下一个进程
+    std::vector<Client*> _rel_cli;  //与该进程相关的client
+    std::vector<Client>* allclient; //所有的client构成一个vector
     virtual bool func() = 0;    //进程的主要执行函数
-    static std::vector<logging> _log;
+    static std::vector<logging> _log;   //日志的vector，存放当天晚上的情况
   public:
-    int get_size();
-    Process(std::vector<Client>*);//allclient
-    static int have_police;
-    virtual bool begin() ;//true继续，false退出
-    virtual Process* next();
-    virtual void add_client(Client*);
-    virtual void set_next(Process*);
-    virtual void activate();
-    virtual bool valid(); //判断该类所代表进程是否需要进行，需要则调用func函数
-    static void deletelog();
-    static std::vector<logging>* readlog();
-    static void writelog(Cha,Act,int);
+    int get_size();             //得到_rel_cli的大小
+    Process(std::vector<Client>*);//构造函数，传入一个vector
+    static int have_police;     //表示是否有警长，-1表示没有警长，否则表示玩家编号
+    virtual bool begin() ;      //进程开始的函数，根据valid的值作出相应的选择
+    virtual Process* next();    //下一个process
+    virtual void add_client(Client*);   //加入client
+    virtual void set_next(Process*);    //设置下一位client
+    virtual void activate();    //激活进程（_valid=true)
+    virtual bool valid();       //判断该类所代表进程是否需要进行
+    static void deletelog();    //删除日志
+    static std::vector<logging>* readlog(); //读日志
+    static void writelog(Cha,Act,int);  //写日志
     virtual ~Process();
   };
   
   
-  class Guarding : public Process    //守卫
+  class Guarding : public Process    //守卫的进程
   {
   protected:
     bool func();
@@ -60,7 +86,7 @@ namespace Werewolf
   };
   
     
-  class Killing : public Process //狼人杀人
+  class Killing : public Process //狼人杀人的进程
   {
   protected:
     bool func();
@@ -71,19 +97,19 @@ namespace Werewolf
   };
     
 	
-  class Witching : public Process//女巫
+  class Witching : public Process   //女巫的进程
   {
   protected:
     static int exe_time;    //总执行次数
     bool func();
   public:
     Witching(std::vector<Client> *cli);
-    int ex_time();    //总的执行次数
-    void add_ex_time(); //执行次数加1
+    int ex_time();          //返回总的执行次数
+    void add_ex_time();     //执行次数加1
   };
     
 	
-  class Predicting : public Process   //预言家
+  class Predicting : public Process   //预言家的进程
   {
   protected:
     bool func();
@@ -92,7 +118,7 @@ namespace Werewolf
   };
     
 	
-  class Calculating : public Process
+  class Calculating : public Process    //结算的进程
   {
   protected:
     Process* _hun;
@@ -119,7 +145,7 @@ namespace Werewolf
   };
     
 	
-  class Po_electing : public Process //选举警长
+  class Po_electing : public Process //选举警长进程
   {
   protected:
     bool func();
@@ -130,7 +156,7 @@ namespace Werewolf
 	
   class Hunting;
   class Po_passing;
-  class Voting : public Process //ͶƱ
+  class Voting : public Process //投票进程
   {
   protected:
     bool func();
@@ -143,8 +169,7 @@ namespace Werewolf
     Voting(std::vector<Client> *cli, Process*, Process*, Process*,int);
   };
    
-  //猎人操作类
-  class Hunting : public Process
+  class Hunting : public Process //猎人操作的进程
   {
   protected:
     std::vector<Client>* _cli;
@@ -156,8 +181,8 @@ namespace Werewolf
   };
     
 	
-  class Po_passing:public Process
-  {//移交警徽
+  class Po_passing : public Process //移交警徽的进程
+  {
   protected:
     bool func();
   public:
@@ -165,8 +190,7 @@ namespace Werewolf
     Po_passing(std::vector<Client>*);
   };
     
-    //Chat类，用于用户之间的聊天功能
-  class Chat : public Process
+  class Chat : public Process       //Chat类，用于用户之间的聊天功能
   {
   protected:
     static std::vector<logging>* _log;
