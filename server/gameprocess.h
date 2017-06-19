@@ -1,4 +1,4 @@
-/*************************************************
+﻿/*************************************************
 名称：process.h
 作者：王琛 李映辉 刘应天 曾军
 时间：2017/05/15
@@ -90,10 +90,10 @@ namespace Werewolf
   {
   protected:
     bool func();
-		std::vector<int> cli_num;
+		std::vector<int> cli_num;//存放狼人位置编号，便于按顺序遍历
   public:
     Killing(std::vector<Client> *cli);
-    void push_cli_num(int num);
+    void push_cli_num(int num);//给cli_num添加编号
   };
     
 	
@@ -160,11 +160,11 @@ namespace Werewolf
   {
   protected:
     bool func();
-    Process* ht;
-    Process* Po_p;
-    Process* _Chat;
-    bool is_end();
-    int _msg;
+    Process* ht;//指向猎人操作进程的指针
+    Process* Po_p;//指向移交警徽进程的指针
+    Process* _Chat;//指向聊天进程的指针
+    bool is_end();//在投票环节结束后游戏是否结束，是-true 否-false
+    int _msg;//记录屠边或屠城
   public:
     Voting(std::vector<Client> *cli, Process*, Process*, Process*,int);
   };

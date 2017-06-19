@@ -1,4 +1,4 @@
-/*************************************************
+﻿/*************************************************
 名称：process.cpp
 作者：王琛 李映辉 刘应天 曾军
 时间：2017/05/20
@@ -137,35 +137,41 @@ bool Guarding :: func()
     }
   return true;
 }
-
+//功能：狼人杀人
 bool Killing::func(){
+  //向所有存活玩家广播信息
   for(int i=0;i<allclient->size();i++)
     if(!(*allclient)[i].selfCharacter()->is_dead())
       (*allclient)[i].print("Night Falls.\n");
-	bool isalive[cli_num.size()];
-	int lastalive=-1;
+  
+	bool isalive[cli_num.size()];//记录所有狼人存活情况，方便后续广播
+	int lastalive=-1;//存活的最末置位狼人编号，此玩家决定杀死对象 从0开始
+	//初始化isalive[]和lastalive
 	for(int i=0;i<cli_num.size();i++){
 		isalive[i]=!(*allclient)[cli_num[i]].selfCharacter()->is_dead();
 		lastalive=cli_num[i];
 	}
+	//向所有狼人广播杀人进程开始的消息
 	for(int i=0;i<cli_num.size();i++)
 		if(isalive[i]){
 			(*allclient)[cli_num[i]].print("It is wolves' turn.\nPlease chat with your partners to decide which one to kill.\n\tAttention: Player "+std::to_string(lastalive+1)+" can make the decision.\n\tHe can input \"KILL\" when he wants to make the final dicision.\n");
-			(*allclient)[cli_num[i]].hold_on_input();
+			(*allclient)[cli_num[i]].hold_on_input();//打开客户端输入
 		}
-	int tgt=-1;
+	int tgt=-1;//被杀目标的编号 从1开始
+
+	//狼人讨论并确定目标
 	while(true){
 		for(int i=0;i<cli_num.size();i++)
 			if(isalive[i]){
-				std::string mes=(*allclient)[cli_num[i]].recv();
-				if(mes!=""){
+				std::string mes=(*allclient)[cli_num[i]].recv();//接受客户端信息
+				if(mes!=""){// 如果非空就输出在所有狼人玩家客户端的屏幕上
 					for(int j=0;j<cli_num.size();j++)
 						if(isalive[j])
 							(*allclient)[cli_num[j]].print("Player "+std::to_string(cli_num[i]+1)+": "+mes+"\n");
 				}
-				if(cli_num[i]==lastalive&&mes=="KILL"){
+				if(cli_num[i]==lastalive&&mes=="KILL"){//如果是KILL命令 进一步处理
 					(*allclient)[lastalive].turn_off_input();
-					(*allclient)[lastalive].print("Which one you want to kill?\nJust input the player number.(-1 represents you haven't decided. 0 represents you won't kill anyone)\n");
+					(*allclient)[lastalive].print("Which one you want to kill?\nJust input the player number.(-1 represents you haven't decided. 0 represents you won't kill anyone)\n");//客户端输入目标玩家编号 从1开始
 					(*allclient)[lastalive].turn_on_input();	
 					tgt=atoi((*allclient)[lastalive].recv().c_str());
 					(*allclient)[lastalive].hold_on_input(); //单机测试的时候注释
@@ -174,9 +180,12 @@ bool Killing::func(){
 		if(tgt>=0)
 			break;
 	}
+	//狼人玩家客户端关闭输入
 	for(int i=0;i<cli_num.size();i++)
 		if(isalive[i])
 			(*allclient)[cli_num[i]].turn_off_input();
+
+	//向所有狼人打印杀人信息
 	for(int i=0;i<cli_num.size();i++){
 		if(isalive[i]){
 			(*allclient)[cli_num[i]].print("A decision has been made.\nChat ends.\n");
@@ -186,8 +195,9 @@ bool Killing::func(){
 				(*allclient)[cli_num[i]].print("You won't kill anyone.\n");
 		}
 	}
+	//将杀人动作写入日志
 	if(tgt>=1)
-    writelog(WOLF,BITE,tgt-1);
+    writelog(WOLF,BITE,tgt-1);//target在内存中从0开始
   return true;
 }
 
@@ -296,26 +306,31 @@ bool Predicting :: func()    //预言家进行身份检测
     }
   return true;
 }
-
+//Voting和Po_passing类的构造函数
 Voting::Voting(std::vector<Client>* _all, Process* hunt,Process* Po_passing ,Process* chat,int msg):Process(_all), ht(hunt),Po_p(Po_passing),_Chat(chat),_msg(msg){}
+
 Po_passing::Po_passing(std::vector<Client>* _all):Process(_all){}
+//投票进程
 bool Voting::func(){
-  _Chat->begin();
-  int n=allclient->size();
-  bool isalive[n];
-  double num[n];
-  int voteinfo[n];
+  _Chat->begin();//先调用聊天进程
+  int n=allclient->size();//在场玩家数
+  bool isalive[n];//记录玩家存活情况 方便后续广播
+  double num[n];//num[i]为第i+1号玩家被投票数
+  int voteinfo[n];//记录每个玩家投向的玩家的编号
+  //初始化isalive[] num[] voteinfo[]
   for(int i=0;i<n;i++){
     isalive[i]=!(*allclient)[i].selfCharacter()->is_dead();
     num[i]=0;
     voteinfo[i]=-1;
   }
+  //制作要打印的信息 提示玩家有效的投票目标
   std::string voted="You can vote to Player";
   for(int i=0;i<n;i++){
     if(isalive[i])
       voted+=" "+std::to_string(i+1);
   }
   voted+=".\n";
+  //警长归票
   if(have_police>=0){
     (*allclient)[have_police - 1].print("Please vote a Player!\n"+voted);
     (*allclient)[have_police - 1].turn_on_input();
@@ -327,15 +342,16 @@ bool Voting::func(){
         pt = (*allclient)[have_police - 1].recv();
       }
     voteinfo[have_police] = atoi(pt.c_str())-1;
-    num[atoi(pt.c_str())-1]+=1.5;
+    num[atoi(pt.c_str())-1]+=1.5;//警长一人算1.5票
   }
+  //除警长外的其余玩家投票
   for(int i=0;i<n;i++)
     if(isalive[i] && i!=have_police - 1){
       (*allclient)[i].print("Please vote!\n"+voted);
-      if(have_police>=0)
+      if(have_police>=0)//打印归票信息
         (*allclient)[i].print("The Police votes to Player "+std::to_string(voteinfo[have_police]+1)+".\n");
       (*allclient)[i].turn_on_input();
-      std::string tgt=(*allclient)[i].recv();
+      std::string tgt=(*allclient)[i].recv();//临时记录被投票的编号
       while(!isalive[atoi(tgt.c_str())-1]){
         (*allclient)[i].print("Please choose another Player!, he is dead.\n");
         (*allclient)[i].turn_on_input();
@@ -344,35 +360,40 @@ bool Voting::func(){
       voteinfo[i]=atoi(tgt.c_str())-1;
       num[atoi(tgt.c_str())-1]+=1.0;
     }
-  double maxx=0;
-  std::vector<int> maxnum;
+
+  double maxx=0;//记录最多的票数 用于比较查找最大值
+  std::vector<int> maxnum;//记录拥有最多票数玩家的编号 可能不止1个
   for(int i=0;i<n;i++)
     if(num[i]>maxx)
       maxx=num[i];
   for(int i=0;i<n;i++)
     if(fabs(num[i]-maxx)<1e-9)
       maxnum.push_back(i);
+  //生成投票信息
   std::string s="";
   for(int i=0;i<n;i++)
     if(isalive[i])
       s+="Player "+std::to_string(i+1)+" votes to Player "+std::to_string(voteinfo[i]+1)+".\n";
-    
+  //打印投票信息
   for(int i=0;i<n;i++)
     if(isalive[i])
       (*allclient)[i].print(s);
     
-  std::vector<int> deadnum;
-  if(maxnum.size()==1){
+  std::vector<int> deadnum;//记录死亡玩家的编号 从0开始
+
+  if(maxnum.size()==1){//最多票数仅有一人的情况
     (*allclient)[maxnum[0]].selfCharacter()->set_dead();
     isalive[maxnum[0]]=0;
-    writelog(ALL,VOTE,maxnum[0]);
-    deadnum.push_back(maxnum[0]);
+    writelog(ALL,VOTE,maxnum[0]);//写入日志
+    deadnum.push_back(maxnum[0]);//写入死亡玩家编号
   }
-  else{
+  else{//多人平票开始第二轮投票
+	//生成平票信息
     std::string tie="Player";
     for(int i=0;i<maxnum.size();i++)
       tie+=" "+std::to_string(maxnum[i]+1);
     tie+=" have the same number of votes.\nRound 2 Chat begins.\nAt the following order:\n\tPlayer";
+	//随机发言顺序
     int r1=rand()%maxnum.size();
     int r2=rand()%2;
     int order=0;
@@ -380,20 +401,23 @@ bool Voting::func(){
       order=1;
     else
       order=-1;
-    std::vector<int> chod;
+
+    std::vector<int> chod;//预处理发言玩家 将他们顺序放入一个vector便于后续操作
     for(int i=0;i<maxnum.size();i++)
       chod.push_back(maxnum[(r1+i*order+maxnum.size())%maxnum.size()]);
     for(int i=0;i<maxnum.size();i++)
       tie+=" "+std::to_string(chod[i]+1);
+	//打印平票信息 告知发言顺序
     for(int i=0;i<n;i++)
       (*allclient)[i].print(tie);
+	//发言过程
     for(int i=0;i<chod.size();i++){
       for(int j=0;j<n;j++)
         if(isalive[j])
           (*allclient)[j].print("Player "+ std::to_string(chod[i]+1)+"'s turn:\n");
       (*allclient)[chod[i]].print("Please input the words you want to say.\n:q + Enter represents ending.\n");
       std::string saying="";
-      while(true){
+      while(true){//不断接受发言玩家消息并广播
         (*allclient)[chod[i]].turn_on_input();
         saying=(*allclient)[chod[i]].recv();
         if(saying!=":q")
@@ -407,10 +431,11 @@ bool Voting::func(){
     }
     for(int i=0;i<n;i++)
       (*allclient)[i].print("Round 2 Chat end.\nRound 2 Voting start.\n");
-    int num2[n];
-    int voteinfo2[n];
-    int maxx=0;
-    bool canvote[n];
+    int num2[n];//类似num[]记录第i+1位玩家被投票数
+    int voteinfo2[n];//第i+1位玩家投向的编号 从0开始
+    int maxx=0;//最多的票数
+    bool canvote[n];//记录每一位玩家是否能投票  平票者不能投票
+	//初始化num2[] voteinfo[] canvote[]
     for(int i=0;i<n;i++){
       num2[i]=0;
       voteinfo2[i]=-1;
@@ -419,11 +444,13 @@ bool Voting::func(){
     for(int i=0;i<maxnum.size();i++){
       canvote[maxnum[i]]=0;
     }
+	//打印合法投票信息
     std::string sec="You can only vote to Player";
     for(int i=0;i<maxnum.size();i++)
       sec+=" "+std::to_string(maxnum[i]+1);
     sec+=".\n";
     maxnum.clear();
+	//第二次投票
     for(int i=0;i<n;i++){
       if(isalive[i]&&canvote[i]){
         (*allclient)[i].print("Please vote!\n"+sec);
@@ -437,16 +464,19 @@ bool Voting::func(){
         num2[atoi(st.c_str())-1]++;
       }
     }
+	//计算票数最高的玩家
     for(int i=0;i<n;i++)
       if(num2[i]>maxx)
         maxx=num2[i];
     for(int i=0;i<n;i++)
       if(num2[i]==maxx)
         maxnum.push_back(i);
+	//生成投票信息
     std::string secs="";
     for(int i=0;i<n;i++)
       if(isalive[i]&&canvote[i])
         secs+="Player "+std::to_string(i+1)+" votes to Player "+std::to_string(voteinfo2[i]+1)+".\n";
+	//打印投票信息
     for(int i=0;i<n;i++)
       if(isalive[i])
         (*allclient)[i].print(s);
@@ -457,25 +487,27 @@ bool Voting::func(){
       deadnum.push_back(maxnum[i]);
     }
   }
+  //生成死亡信息
   std::string deathinfo="Player";
   for(int i=0;i<deadnum.size();i++)
     deathinfo+=" "+std::to_string(deadnum[i]+1);
   deathinfo+=" out!\n";
+  //打印死亡信息
   for(int i=0;i<n;i++)
     if(isalive[i])
       (*allclient)[i].print(deathinfo);
   bool isend=is_end();
-  if(isend)
+  if(isend)//判断是否结束
     return false;
   else{
-    bool flag1=0;
-    bool flag2=0;
+    bool flag1=0;//记录警长是否死亡
+    bool flag2=0;//记录猎人是否死亡
     for(int i=0;i<deadnum.size();i++)
       if(deadnum[i]==have_police){
         flag1=1;
         break;
       }
-    if(flag1)
+    if(flag1)//移交警徽
       Po_p->begin();
         
     for(int i=0;i<deadnum.size();i++)
@@ -483,12 +515,12 @@ bool Voting::func(){
         flag2=1;
         break;
       }
-    if(flag2){
+    if(flag2){//猎人开枪
       ht->begin();
       bool isend2=is_end();
-      if(isend2)
+      if(isend2)//再次判断是否结束
         return false;
-      else{
+      else{//如果警长被猎人打死 再次移交警徽
         if((*readlog())[readlog()->size()-1]._act==SHOOT){
           int behunt=(*readlog())[readlog()->size()-1]._geter;
           if(behunt==have_police)
@@ -497,6 +529,9 @@ bool Voting::func(){
       }
     }
     deadnum.clear();
+	//遗言环节
+	
+	//统计死者
     for(int i=_log.size()-1;i>=0;i--)
       if(_log[i]._act==VOTE||_log[i]._act==SHOOT)
         deadnum.push_back(_log[i]._geter);
@@ -506,6 +541,7 @@ bool Voting::func(){
       isalive[i]=!(*allclient)[i].selfCharacter()->is_dead();
     for(int i=0;i<deadnum.size();i++)
       isalive[deadnum[i]]=1;
+	//广播遗言
     for(int i=deadnum.size()-1;i>=0;i--){
       (*allclient)[deadnum[i]].print("Please input your last words.\n:q + Enter represents ending.\n");
       (*allclient)[deadnum[i]].turn_on_input();
@@ -518,6 +554,7 @@ bool Voting::func(){
         ladd=(*allclient)[deadnum[i]].recv();
       }
       lword+="Last words end.\n";
+	  //退出游戏的提示信息
       for(int j=0;j<n;j++)
         if(isalive[j]&&j!=deadnum[i])
           (*allclient)[j].print(lword);
@@ -542,7 +579,7 @@ bool Voting::is_end(){
         villnum++;
       else godnum++;
     }
-  if(_msg==1){
+  if(_msg==1){//屠边
     if(wolfnum==0&&villnum!=0&&godnum!=0){
       for(int i=0;i<n;i++)
         (*allclient)[i].print("Good Man Win!\n");
@@ -560,7 +597,7 @@ bool Voting::is_end(){
     if(wolfnum!=0&&villnum!=0&&godnum!=0)
       return false;
   }
-  else{
+  else{//屠城
     int goodman=godnum+villnum;
     if(goodman==0&&wolfnum!=0){
       for(int i=0;i<n;i++)
