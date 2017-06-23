@@ -1,5 +1,5 @@
 //Name : character.h
-//Author : 王琛
+//Author : 王琛 2016011360 计65
 //Date : 2017-05-15
 //Description : 声明了所有角色的基类和子类
 //Copyright : 自行完成
